@@ -15,6 +15,11 @@ namespace Tatehama_musen_PC.Views
             PopulateCallList();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateTitle();
+        }
+
         private void PopulateCallList()
         {
             CallList?.Items.Clear();
@@ -25,7 +30,25 @@ namespace Tatehama_musen_PC.Views
             }
         }
 
-        private void ChangeWorkLocationMenuItem_Click(object sender, RoutedEventArgs e) { }
+        private void UpdateTitle()
+        {
+            var app = (App)Application.Current;
+            if (!string.IsNullOrEmpty(app.SelectedDisplayName))
+            {
+                this.Title = $"Tatehama Musen - {app.SelectedDisplayName}";
+            }
+            else
+            {
+                this.Title = "Tatehama Musen";
+            }
+        }
+
+        private void ChangeWorkLocationMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var workLocationWindow = new WorkLocationWindow();
+            workLocationWindow.ShowDialog();
+            UpdateTitle();
+        }
         private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e) { }
         
         private void CallList_SelectionChanged(object sender, SelectionChangedEventArgs e)

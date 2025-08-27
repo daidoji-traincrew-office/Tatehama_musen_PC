@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tatehama_musen_PC"
         mc:Ignorable="d"
-        Title="MainWindow" Height="480" Width="800"
-        Closed="Window_Closed">
+        Title="Tatehama Musen" Height="480" Width="800"
+        Closed="Window_Closed" Loaded="Window_Loaded">
     <Window.Resources>
         <Style TargetType="Button" x:Key="ImageButton">
             <Setter Property="Cursor" Value="Hand"/>
@@ -30,7 +30,7 @@
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0">
-            <MenuItem Header="_勤務地変更"/>
+            <MenuItem Header="_勤務地変更" Click="ChangeWorkLocationMenuItem_Click"/>
             <MenuItem Header="_設定">
                 <MenuItem Header="_音声設定"/>
             </MenuItem>
