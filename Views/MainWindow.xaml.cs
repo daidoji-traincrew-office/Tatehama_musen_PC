@@ -1,0 +1,43 @@
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using Tatehama_musen_PC.Models;
+using Tatehama_musen_PC.ViewModels;
+
+namespace Tatehama_musen_PC.Views
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = new TenkeyViewModel();
+            PopulateCallList();
+        }
+
+        private void PopulateCallList()
+        {
+            CallList?.Items.Clear();
+            var allLocations = LocationData.GetLocations();
+            foreach (var location in allLocations)
+            {
+                CallList?.Items.Add(location);
+            }
+        }
+
+        private void ChangeWorkLocationMenuItem_Click(object sender, RoutedEventArgs e) { }
+        private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e) { }
+        private void CallList_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        private void jyuwaButton_Click(object sender, RoutedEventArgs e) { }
+        private void hashinButton_Click(object sender, RoutedEventArgs e) { }
+        private void syuwaButton_Click(object sender, RoutedEventArgs e) { }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (DataContext is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+    }
+}
