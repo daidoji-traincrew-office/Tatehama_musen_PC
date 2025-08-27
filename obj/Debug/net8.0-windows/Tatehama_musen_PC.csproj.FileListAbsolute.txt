@@ -27,3 +27,4 @@ d:\tatehama_Client\PC\Tatehama_musen_PC\bin\Debug\net8.0-windows\NAudio.WinForms
 d:\tatehama_Client\PC\Tatehama_musen_PC\bin\Debug\net8.0-windows\NAudio.WinMM.dll
 d:\tatehama_Client\PC\Tatehama_musen_PC\obj\Debug\net8.0-windows\Tatehama_musen_PC.csproj.AssemblyReference.cache
 d:\tatehama_Client\PC\Tatehama_musen_PC\obj\Debug\net8.0-windows\Tatehama.461EC8C6.Up2Date
+D:\tatehama_Client\PC\Tatehama_musen_PC\obj\Debug\net8.0-windows\Tatehama_musen_PC.sourcelink.json

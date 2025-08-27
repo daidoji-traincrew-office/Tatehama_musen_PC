@@ -1,0 +1,40 @@
+# C# Project
+
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider
+
+.idea/
+
+# User-specific files
+
+*.DS_Store
+
+# Build results
+
+[Dd]ebug/
+[Rr]elease/
+[Dd]ebugPublic/
+[Rr]eleasePublic/
+x64/
+x86/
+[Aa]rm64/
+
+# NuGet
+
+*.nupkg
+*.snupkg
+
+# Dotnet files
+
+project.lock.json
+project.assets.json

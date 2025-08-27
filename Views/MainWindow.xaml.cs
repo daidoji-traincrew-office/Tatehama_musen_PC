@@ -27,7 +27,15 @@ namespace Tatehama_musen_PC.Views
 
         private void ChangeWorkLocationMenuItem_Click(object sender, RoutedEventArgs e) { }
         private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e) { }
-        private void CallList_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        
+        private void CallList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CallList.SelectedItem is CallListItem selectedItem && DataContext is TenkeyViewModel viewModel)
+            {
+                viewModel.PhoneNumber = selectedItem.PhoneNumber;
+            }
+        }
+
         private void jyuwaButton_Click(object sender, RoutedEventArgs e) { }
         private void hashinButton_Click(object sender, RoutedEventArgs e) { }
         private void syuwaButton_Click(object sender, RoutedEventArgs e) { }

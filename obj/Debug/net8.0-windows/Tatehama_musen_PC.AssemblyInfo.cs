@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Tatehama_musen_PC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ae3e035380ce633a8695c6869abb1dfe6c7ad6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Tatehama_musen_PC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Tatehama_musen_PC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

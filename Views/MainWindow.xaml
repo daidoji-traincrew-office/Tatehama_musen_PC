@@ -42,7 +42,7 @@
                     <ImageBrush ImageSource="/image/tetudoudenwa.png"/>
                 </Canvas.Background>
 
-                <ListView x:Name="CallList" Canvas.Left="51" Canvas.Top="83" Width="254" Height="331" Background="White" Foreground="Black" BorderBrush="Black" FontSize="16">
+                <ListView x:Name="CallList" Canvas.Left="51" Canvas.Top="83" Width="254" Height="331" Background="White" Foreground="Black" BorderBrush="Black" FontSize="16" SelectionChanged="CallList_SelectionChanged">
                 </ListView>
 
                 <TextBlock x:Name="CallTimerDisplay" 
