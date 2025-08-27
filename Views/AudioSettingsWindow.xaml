@@ -1,0 +1,54 @@
+<Window x:Class="Tatehama_musen_PC.Views.AudioSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tatehama_musen_PC.Views"
+        mc:Ignorable="d"
+        Title="音声設定" Height="300" Width="500"
+        WindowStartupLocation="CenterOwner" SizeToContent="Height">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 出力デバイス -->
+        <Label Grid.Row="0" Grid.Column="0" Content="出力デバイス (スピーカー):" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" Margin="5" 
+                  ItemsSource="{Binding OutputDevices}" 
+                  SelectedItem="{Binding SelectedOutputDevice}"
+                  DisplayMemberPath="FriendlyName"/>
+        <Button Grid.Row="0" Grid.Column="2" Content="テスト" Margin="5" Padding="10,2"
+                Command="{Binding TestOutputCommand}"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="出力音量:" VerticalAlignment="Center"/>
+        <Slider Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" VerticalAlignment="Center"
+                Minimum="0" Maximum="1" Value="{Binding OutputVolume}" TickFrequency="0.1"/>
+
+        <!-- 入力デバイス -->
+        <Label Grid.Row="2" Grid.Column="0" Content="入力デバイス (マイク):" VerticalAlignment="Center" Margin="0,20,0,0"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,20,5,0"
+                  ItemsSource="{Binding InputDevices}"
+                  SelectedItem="{Binding SelectedInputDevice}"
+                  DisplayMemberPath="FriendlyName"/>
+
+        <Label Grid.Row="3" Grid.Column="0" Content="マイクレベル:" VerticalAlignment="Center"/>
+        <ProgressBar Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Height="15"
+                     Minimum="0" Maximum="1" Value="{Binding InputLevel, Mode=OneWay}"/>
+
+        <!-- 閉じるボタン -->
+        <Button Grid.Row="5" Grid.ColumnSpan="3" Content="閉じる" Width="100" Margin="0,20,0,0" HorizontalAlignment="Center"
+                Command="{Binding CloseCommand}" IsDefault="True"/>
+
+    </Grid>
+</Window>

@@ -35,7 +35,7 @@ namespace Tatehama_musen_PC.Views
             var app = (App)Application.Current;
             if (!string.IsNullOrEmpty(app.SelectedDisplayName))
             {
-                this.Title = $"Tatehama Musen - {app.SelectedDisplayName}";
+                this.Title = $"Tatehama Musen - {app.SelectedDisplayName} ({app.SelectedPhoneNumber})";
             }
             else
             {
@@ -49,7 +49,12 @@ namespace Tatehama_musen_PC.Views
             workLocationWindow.ShowDialog();
             UpdateTitle();
         }
-        private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e) { }
+        private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var audioSettingsWindow = new AudioSettingsWindow();
+            audioSettingsWindow.Owner = this;
+            audioSettingsWindow.ShowDialog();
+        }
         
         private void CallList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
