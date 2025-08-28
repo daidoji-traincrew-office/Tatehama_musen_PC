@@ -8,12 +8,15 @@ using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Tatehama_musen_PC.ViewModels
 {
     public class AudioSettingsViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly MMDeviceEnumerator _enumerator = new MMDeviceEnumerator();
+        private readonly DispatcherTimer _monitoringTimer;
+        private float _lastPeak;
 
         public ObservableCollection<MMDevice> OutputDevices { get; }
         public ObservableCollection<MMDevice> InputDevices { get; }
@@ -27,7 +30,6 @@ namespace Tatehama_musen_PC.ViewModels
                 if (_selectedOutputDevice == value) return;
                 _selectedOutputDevice = value;
                 OnPropertyChanged();
-                UpdateOutputVolume();
             }
         }
 
@@ -44,7 +46,7 @@ namespace Tatehama_musen_PC.ViewModels
             }
         }
 
-        private double _outputVolume;
+        private double _outputVolume = 1.0;
         public double OutputVolume
         {
             get => _outputVolume;
@@ -53,7 +55,6 @@ namespace Tatehama_musen_PC.ViewModels
                 if (Math.Abs(_outputVolume - value) < 0.01) return;
                 _outputVolume = value;
                 OnPropertyChanged();
-                SetOutputVolume(value);
             }
         }
 
@@ -84,7 +85,19 @@ namespace Tatehama_musen_PC.ViewModels
             CloseCommand = new RelayCommand(() => RequestClose?.Invoke(this, EventArgs.Empty));
             TestOutputCommand = new RelayCommand(PlayTestSound, () => _waveOutDevice?.PlaybackState != PlaybackState.Playing);
 
+            _monitoringTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            _monitoringTimer.Tick += MonitoringTimer_Tick;
+
             InitializeDefaultDevices();
+        }
+
+        private void MonitoringTimer_Tick(object? sender, EventArgs e)
+        {
+            InputLevel = _lastPeak;
+            _lastPeak = 0f;
         }
 
         private void InitializeDefaultDevices()
@@ -96,24 +109,9 @@ namespace Tatehama_musen_PC.ViewModels
             catch { SelectedInputDevice = InputDevices.FirstOrDefault(); }
         }
 
-        private void UpdateOutputVolume()
-        {
-            if (SelectedOutputDevice != null)
-            {
-                OutputVolume = SelectedOutputDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
-            }
-        }
-
-        private void SetOutputVolume(double volume)
-        {
-            if (SelectedOutputDevice != null)
-            {
-                SelectedOutputDevice.AudioEndpointVolume.MasterVolumeLevelScalar = (float)volume;
-            }
-        }
-
         private void StartMonitoring()
         {
+            _monitoringTimer.Stop();
             _captureDevice?.StopRecording();
             _captureDevice?.Dispose();
             _captureDevice = null;
@@ -124,27 +122,29 @@ namespace Tatehama_musen_PC.ViewModels
             {
                 _captureDevice = new WasapiCapture(SelectedInputDevice);
                 _captureDevice.DataAvailable += OnDataAvailable;
-                _captureDevice.RecordingStopped += (s, a) => InputLevel = 0;
+                _captureDevice.RecordingStopped += (s, a) =>
+                {
+                    Application.Current.Dispatcher.InvokeAsync(() => InputLevel = 0);
+                    _monitoringTimer.Stop();
+                };
                 _captureDevice.StartRecording();
+                _monitoringTimer.Start();
             }
             catch (Exception)
             {
-                // エラー処理: デバイスが使用できない場合など
                 InputLevel = 0;
             }
         }
 
         private void OnDataAvailable(object? sender, WaveInEventArgs e)
         {
-            float max = 0;
             var buffer = new WaveBuffer(e.Buffer);
             for (int index = 0; index < e.BytesRecorded / 4; index++)
             {
                 var sample = buffer.FloatBuffer[index];
                 if (sample < 0) sample = -sample;
-                if (sample > max) max = sample;
+                if (sample > _lastPeak) _lastPeak = sample;
             }
-            Application.Current.Dispatcher.InvokeAsync(() => InputLevel = max);
         }
 
         private void PlayTestSound()
@@ -158,7 +158,12 @@ namespace Tatehama_musen_PC.ViewModels
                 Gain = 0.2,
                 Frequency = 440,
                 Type = SignalGeneratorType.Sin
-            }.Take(TimeSpan.FromSeconds(1));
+            };
+
+            var volumeProvider = new VolumeSampleProvider(signalGenerator)
+            {
+                Volume = (float)OutputVolume
+            };
 
             _waveOutDevice = new WasapiOut(SelectedOutputDevice, AudioClientShareMode.Shared, false, 200);
             _waveOutDevice.PlaybackStopped += (s, a) =>
@@ -168,7 +173,7 @@ namespace Tatehama_musen_PC.ViewModels
                 Application.Current.Dispatcher.InvokeAsync(() => ((RelayCommand)TestOutputCommand).RaiseCanExecuteChanged());
             };
 
-            _waveOutDevice.Init(signalGenerator);
+            _waveOutDevice.Init(volumeProvider.Take(TimeSpan.FromSeconds(1)));
             _waveOutDevice.Play();
             ((RelayCommand)TestOutputCommand).RaiseCanExecuteChanged();
         }
@@ -180,6 +185,7 @@ namespace Tatehama_musen_PC.ViewModels
             _waveOutDevice?.Dispose();
             _captureDevice?.StopRecording();
             _captureDevice?.Dispose();
+            _monitoringTimer.Stop();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
