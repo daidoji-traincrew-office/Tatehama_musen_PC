@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Tatehama_musen_PC.ViewModels;
 using Tatehama_musen_PC.Views;
 
 namespace Tatehama_musen_PC
@@ -25,6 +26,11 @@ namespace Tatehama_musen_PC
             }
             else
             {
+                // Trigger connection and registration after phone number is selected
+                if (mainWindow.DataContext is MainViewModel viewModel)
+                {
+                    _ = viewModel.ConnectAndRegisterAsync();
+                }
                 mainWindow.Show();
             }
         }

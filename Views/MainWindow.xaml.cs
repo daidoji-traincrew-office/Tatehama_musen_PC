@@ -1,3 +1,4 @@
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,10 +9,13 @@ namespace Tatehama_musen_PC.Views
 {
     public partial class MainWindow : Window
     {
+        private readonly MainViewModel _viewModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new TenkeyViewModel();
+            _viewModel = new MainViewModel();
+            DataContext = _viewModel;
             PopulateCallList();
         }
 
@@ -43,11 +47,12 @@ namespace Tatehama_musen_PC.Views
             }
         }
 
-        private void ChangeWorkLocationMenuItem_Click(object sender, RoutedEventArgs e)
+        private async void ChangeWorkLocationMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var workLocationWindow = new WorkLocationWindow();
             workLocationWindow.ShowDialog();
             UpdateTitle();
+            await _viewModel.ReregisterWithServerAsync();
         }
         private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -58,9 +63,9 @@ namespace Tatehama_musen_PC.Views
         
         private void CallList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CallList.SelectedItem is CallListItem selectedItem && DataContext is TenkeyViewModel viewModel)
+            if (CallList.SelectedItem is CallListItem selectedItem)
             {
-                viewModel.PhoneNumber = selectedItem.PhoneNumber;
+                _viewModel.TenkeyViewModel.PhoneNumber = selectedItem.PhoneNumber;
             }
         }
 
@@ -68,8 +73,13 @@ namespace Tatehama_musen_PC.Views
         private void hashinButton_Click(object sender, RoutedEventArgs e) { }
         private void syuwaButton_Click(object sender, RoutedEventArgs e) { }
 
-        private void Window_Closed(object sender, EventArgs e)
+        private async void Window_Closed(object sender, EventArgs e)
         {
+            if (_viewModel.ConnectionService.IsConnected)
+            {
+                await _viewModel.ConnectionService.DisconnectAsync();
+            }
+
             if (DataContext is IDisposable disposable)
             {
                 disposable.Dispose();
