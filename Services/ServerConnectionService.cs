@@ -15,9 +15,9 @@ namespace Tatehama_musen_PC.Services
 
         public event Action? OnConnected;
         public event Action? OnDisconnected;
-        
-        // You can add more events here for specific server-to-client messages
-        // public event Action<string, object> OnReceiveOffer;
+        public event Action<string, object>? OnReceiveOffer;
+        public event Action<string>? OnTargetNotFound;
+        public event Action? OnCallEnded;
 
         public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
 
@@ -34,7 +34,6 @@ namespace Tatehama_musen_PC.Services
                     _hubConnection = new HubConnectionBuilder()
                         .WithUrl(url, options =>
                         {
-                            // This is needed for the self-signed cert in development
                             options.HttpMessageHandlerFactory = (handler) =>
                             {
                                 if (handler is HttpClientHandler clientHandler)
@@ -47,15 +46,16 @@ namespace Tatehama_musen_PC.Services
                         .WithAutomaticReconnect()
                         .Build();
 
-                    // The Closed event is fired when the connection is lost.
                     _hubConnection.Closed += (error) =>
                     {
                         OnDisconnected?.Invoke();
                         return Task.CompletedTask;
                     };
                     
-                    // Register handlers for methods the server will call on the client here
-                    // e.g. _hubConnection.On<string, object>("ReceiveOffer", (from, offer) => OnReceiveOffer?.Invoke(from, offer));
+                    // Register handlers for server-to-client messages
+                    _hubConnection.On<string, object>("ReceiveOffer", (from, offer) => OnReceiveOffer?.Invoke(from, offer));
+                    _hubConnection.On<string>("TargetNotFound", (target) => OnTargetNotFound?.Invoke(target));
+                    _hubConnection.On("CallEnded", () => OnCallEnded?.Invoke());
 
                     await _hubConnection.StartAsync();
                     
@@ -84,16 +84,32 @@ namespace Tatehama_musen_PC.Services
 
         public async Task DisconnectAsync()
         {
-            if (!IsConnected || _hubConnection == null) return;
+            if (_hubConnection == null) return;
             await _hubConnection.StopAsync();
         }
 
-        // You can add more specific InvokeAsync methods here as needed
-        // For example:
-        // public async Task SendOfferAsync(string target, object offer)
-        // {
-        //     if (!IsConnected || _hubConnection == null) return;
-        //     await _hubConnection.InvokeAsync("SendOffer", target, offer);
-        // }
+        public async Task SendOfferAsync(string targetPhoneNumber, object offer)
+        {
+            if (!IsConnected || _hubConnection == null) return;
+            await _hubConnection.InvokeAsync("SendOffer", targetPhoneNumber, offer);
+        }
+
+        public async Task SendAnswerAsync(string targetPhoneNumber, object answer)
+        {
+            if (!IsConnected || _hubConnection == null) return;
+            await _hubConnection.InvokeAsync("SendAnswer", targetPhoneNumber, answer);
+        }
+
+        public async Task SendIceCandidateAsync(string targetPhoneNumber, object iceCandidate)
+        {
+            if (!IsConnected || _hubConnection == null) return;
+            await _hubConnection.InvokeAsync("SendIceCandidate", targetPhoneNumber, iceCandidate);
+        }
+
+        public async Task SendHangUpAsync()
+        {
+            if (!IsConnected || _hubConnection == null) return;
+            await _hubConnection.InvokeAsync("HangUp");
+        }
     }
 }

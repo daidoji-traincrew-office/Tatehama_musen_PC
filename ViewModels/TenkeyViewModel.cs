@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using NAudio.Wave;
 
@@ -24,7 +25,7 @@ namespace Tatehama_musen_PC.ViewModels
         public ICommand DeleteCommand { get; }
 
         private readonly WaveOutEvent _waveOut;
-        private readonly AudioFileReader _audioFileReader;
+        private readonly WaveStream _audioFileReader;
 
         public TenkeyViewModel()
         {
@@ -33,11 +34,11 @@ namespace Tatehama_musen_PC.ViewModels
             DeleteCommand = new RelayCommand(Delete);
 
             _waveOut = new WaveOutEvent();
-            // The following path needs to be absolute
-            _audioFileReader = new AudioFileReader(@"d:\tatehama_Client\PC\Tatehama_musen_PC\sound\push.wav");
+            var resourceStream = Application.GetResourceStream(new Uri("pack://application:,,,/sound/push.wav"));
+            _audioFileReader = new WaveFileReader(resourceStream.Stream);
         }
 
-        private void PlaySound()
+        public void PlaySound()
         {
             _audioFileReader.Position = 0;
             _waveOut.Stop();

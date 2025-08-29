@@ -52,7 +52,7 @@ namespace Tatehama_musen_PC.Views
             var workLocationWindow = new WorkLocationWindow();
             workLocationWindow.ShowDialog();
             UpdateTitle();
-            await _viewModel.ReregisterWithServerAsync();
+            // await _viewModel.ReregisterWithServerAsync();
         }
         private void AudioSettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {

@@ -86,7 +86,7 @@
 
                 <Canvas x:Name="FunctionButtonsCanvas" Canvas.Left="548" Canvas.Top="360">
                     <!-- 受話ボタン -->
-                    <Button x:Name="jyuwaButton" Canvas.Left="0" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
+                    <Button x:Name="jyuwaButton" Command="{Binding AnswerCommand}" Canvas.Left="0" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="RootBorder">
@@ -142,7 +142,7 @@
                     </Button>
 
                     <!-- 発信ボタン -->
-                    <Button x:Name="hashinButton" Canvas.Left="77" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
+                    <Button x:Name="hashinButton" Command="{Binding CallCommand}" Canvas.Left="77" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="RootBorder">
@@ -201,7 +201,7 @@
                     </Button>
 
                     <!-- 終話ボタン -->
-                    <Button x:Name="syuwaButton" Canvas.Left="154" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
+                    <Button x:Name="syuwaButton" Command="{Binding HangUpCommand}" Canvas.Left="154" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="RootBorder">
@@ -258,6 +258,9 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
+
+                    <!-- 着信シミュレートボタン -->
+                    <Button x:Name="simulateIncomingCallButton" Command="{Binding SimulateIncomingCallCommand}" Canvas.Left="231" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand" Content="Simulate Call"/>
                 </Canvas>
 
             </Canvas>
