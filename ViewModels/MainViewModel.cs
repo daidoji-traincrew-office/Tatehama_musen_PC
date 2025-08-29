@@ -8,6 +8,15 @@ using Tatehama_musen_PC.Services;
 
 namespace Tatehama_musen_PC.ViewModels
 {
+    public enum CallState
+    {
+        Idle,        // 待機中
+        ReadyToCall, // 発信可能 (4桁入力)
+        Calling,     // 発信中
+        Ringing,     // 着信中
+        InCall       // 通話中
+    }
+
     public class MainViewModel : INotifyPropertyChanged, IDisposable
     {
         public ServerConnectionService ConnectionService { get; }
@@ -26,6 +35,32 @@ namespace Tatehama_musen_PC.ViewModels
             }
         }
 
+        private CallState _currentCallState = CallState.Idle;
+        public CallState CurrentCallState
+        {
+            get => _currentCallState;
+            set
+            {
+                _currentCallState = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isOutgoingCall;
+        public bool IsOutgoingCall
+        {
+            get => _isOutgoingCall;
+            set
+            {
+                if (_isOutgoingCall != value)
+                {
+                    _isOutgoingCall = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
         public MainViewModel()
         {
             ClientId = Guid.NewGuid().ToString();
@@ -35,7 +70,19 @@ namespace Tatehama_musen_PC.ViewModels
             ConnectionService.OnConnected += () => Application.Current.Dispatcher.Invoke(() => ConnectionStatus = "接続済み");
             ConnectionService.OnDisconnected += () => Application.Current.Dispatcher.Invoke(() => ConnectionStatus = "切断されました");
 
-            // _ = ConnectToServer(); // Removed automatic connection on startup
+            TenkeyViewModel.PropertyChanged += TenkeyViewModel_PropertyChanged;
+        }
+
+        private void TenkeyViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TenkeyViewModel.PhoneNumber))
+            {
+                // Only change state if currently idle or ready to call
+                if (CurrentCallState == CallState.Idle || CurrentCallState == CallState.ReadyToCall)
+                {
+                    CurrentCallState = TenkeyViewModel.PhoneNumber.Length == 4 ? CallState.ReadyToCall : CallState.Idle;
+                }
+            }
         }
 
         public async Task ConnectAndRegisterAsync()
@@ -94,6 +141,7 @@ namespace Tatehama_musen_PC.ViewModels
 
         public void Dispose()
         {
+            TenkeyViewModel.PropertyChanged -= TenkeyViewModel_PropertyChanged;
             (TenkeyViewModel as IDisposable)?.Dispose();
         }
     }

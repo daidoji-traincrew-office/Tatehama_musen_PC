@@ -5,7 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tatehama_musen_PC"
+        xmlns:vm="clr-namespace:Tatehama_musen_PC.ViewModels"
         mc:Ignorable="d"
+        x:Name="RootWindow"
         Title="Tatehama Musen" Height="480" Width="800"
         Closed="Window_Closed" Loaded="Window_Loaded">
     <Window.Resources>
@@ -83,20 +85,178 @@
                 </Canvas>
 
                 <Canvas x:Name="FunctionButtonsCanvas" Canvas.Left="548" Canvas.Top="360">
-                    <Button x:Name="jyuwaButton" Canvas.Left="0" Width="77" Height="80" Style="{StaticResource ImageButton}" BorderBrush="Transparent" Canvas.Top="10">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/image/jyuwa.png" Stretch="Fill"/>
-                        </Button.Background>
+                    <!-- 受話ボタン -->
+                    <Button x:Name="jyuwaButton" Canvas.Left="0" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="RootBorder">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="/image/jyuwa.png" Stretch="Fill"/>
+                                    </Border.Background>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/jyuwa-kiro.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.Ringing}">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard Name="JyuwaBlinkStory">
+                                                <Storyboard RepeatBehavior="Forever">
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootBorder" Storyboard.TargetProperty="Background">
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.4">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <ImageBrush ImageSource="/image/jyuwa-ao.png" Stretch="Fill" />
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.8">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <ImageBrush ImageSource="/image/jyuwa.png" Stretch="Fill" />
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <StopStoryboard BeginStoryboardName="JyuwaBlinkStory"/>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.InCall}"/>
+                                            <Condition Binding="{Binding DataContext.IsOutgoingCall, ElementName=RootWindow}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/jyuwa-ao.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </MultiDataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
-                    <Button x:Name="hashinButton" Canvas.Left="77" Width="77" Height="80" Style="{StaticResource ImageButton}" BorderBrush="Transparent" Canvas.Top="10">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/image/hashin.png" Stretch="Fill"/>
-                        </Button.Background>
+
+                    <!-- 発信ボタン -->
+                    <Button x:Name="hashinButton" Canvas.Left="77" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="RootBorder">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="/image/hashin.png" Stretch="Fill"/>
+                                    </Border.Background>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/hashin-kiro.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.ReadyToCall}">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard Name="HashinBlinkStory">
+                                                <Storyboard RepeatBehavior="Forever">
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootBorder" Storyboard.TargetProperty="Background">
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.4">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <ImageBrush ImageSource="/image/hashin-ao.png" Stretch="Fill" />
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.8">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <ImageBrush ImageSource="/image/hashin.png" Stretch="Fill" />
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <StopStoryboard BeginStoryboardName="HashinBlinkStory"/>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.Calling}">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/hashin-ao.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.InCall}">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/hashin-ao.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
-                    <Button x:Name="syuwaButton" Canvas.Left="154" Width="77" Height="80" Style="{StaticResource ImageButton}" BorderBrush="Transparent" Canvas.Top="10">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/image/syuwa.png" Stretch="Fill"/>
-                        </Button.Background>
+
+                    <!-- 終話ボタン -->
+                    <Button x:Name="syuwaButton" Canvas.Left="154" Width="77" Height="80" BorderBrush="Transparent" Canvas.Top="10" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="RootBorder">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="/image/syuwa.png" Stretch="Fill"/>
+                                    </Border.Background>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/syuwa-kiro.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.Calling}">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/syuwa-aka.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.InCall}">
+                                        <Setter TargetName="RootBorder" Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="/image/syuwa-aka.png" Stretch="Fill"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DataContext.CurrentCallState, ElementName=RootWindow}" Value="{x:Static vm:CallState.Ringing}">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard Name="SyuwaBlinkStory">
+                                                <Storyboard RepeatBehavior="Forever">
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootBorder" Storyboard.TargetProperty="Background">
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.4">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <ImageBrush ImageSource="/image/syuwa-aka.png" Stretch="Fill" />
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.8">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <ImageBrush ImageSource="/image/syuwa.png" Stretch="Fill" />
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <StopStoryboard BeginStoryboardName="SyuwaBlinkStory"/>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
                 </Canvas>
 
